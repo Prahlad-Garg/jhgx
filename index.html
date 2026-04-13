@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Outdoor Navigation</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
+    <link rel="stylesheet" href="css/style.css"/>
+
+</head>
+
+<body>
+
+<div class="search-container">
+    <input id="searchBox" placeholder="Search location..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div id="dropdown" class="dropdown"></div>
+</div>
+
+<div id="map"></div>
+<button id="enterBtn" style="display:none;">Enter Building</button>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+<script>
+
+// DATABASE
+const placesDB = {
+  "alka": {
+    indoorName: "dr alka jindal",
+    entrance: [30.76738, 76.78584]
+  },
+  "l19": {
+    indoorName: "l19",
+    entrance: [30.76738, 76.78584]
+  },
+  "sandeep": {
+    indoorName: "dr sandeep kaur",
+    entrance: [30.76738, 76.78584]
+  },
+  "cl13": {
+    indoorName: "cl13",
+    entrance: [30.76738, 76.78584]
+  },
+  "cl14": {
+    indoorName: "cl14",
+    entrance: [30.76738, 76.78584]
+  },
+  "cse office": {
+    indoorName: "cse office",
+    entrance: [30.76738, 76.78584]
+  },
+  "store keeper": {
+    indoorName: "store keeper cse",
+    entrance: [30.76738, 76.78584]
+  },
+  "rupali": {
+    indoorName: "dr rupali syal",
+    entrance: [30.76738, 76.78584]
+  },
+  "balwinder": {
+    indoorName: "dr balwinder singh",
+    entrance: [30.76738, 76.78584]
+  },
+  "jaimala": {
+    indoorName: "dr jaimala gambhir",
+    entrance: [30.76738, 76.78584]
+  },
+  "under construction": {
+    indoorName: "under construction",
+    entrance: [30.76738, 76.78584]
+  },
+  "trilok": {
+    indoorName: "dr trilok chand",
+    entrance: [30.76738, 76.78584]
+  },
+  "amar": {
+    indoorName: "amar singh",
+    entrance: [30.76738, 76.78584]
+  },
+  "seminar": {
+    indoorName: "seminar hall",
+    entrance: [30.76738, 76.78584]
+  },
+  "computational": {
+    indoorName: "computational lab",
+    entrance: [30.76738, 76.78584]
+  },
+  "prabhjeet": {
+    indoorName: "prabhjeet",
+    entrance: [30.76738, 76.78584]
+  },
+  "rakesh kumar": {
+    indoorName: "Rakesh Kumar",
+    entrance: [30.76738, 76.78584],
+    aliases: ["rakesh", "rakesh kumar"]
+  },
+
+  "rakesh kumar prof": {
+    indoorName: "Rakesh Kumar Prof",
+    entrance: [30.76738, 76.78584],
+    aliases: ["rakesh prof", "rakesh kumar prof", "prof rakesh"]
+  }
+};
+
+
+let navSound = new Audio("sounds/navigate2.mp3");
+
+// FOR COMPLETE NAME SUGGESION
+const searchBox = document.getElementById("searchBox");
+const dropdown = document.getElementById("dropdown");
+
+function normalize(text) {
+    return text
+      .toLowerCase()
+      .replace(/\bdr\.?\b/g, "")  // remove "dr" or "dr."
+      .replace(/\s+/g, " ")       // remove extra spaces
+      .trim();
+  }
+  
+  searchBox.addEventListener("input", function () {
+    let input = normalize(this.value);
+  
+    dropdown.innerHTML = "";
+    if (!input) return;
+  
+    let matches = Object.keys(placesDB).filter(key => {
+      let keyText = normalize(key);
+      let indoorText = normalize(placesDB[key].indoorName);
+  
+      return keyText.includes(input) || indoorText.includes(input);
+    });
+  
+    matches.slice(0, 6).forEach(key => {
+      let item = document.createElement("div");
+      item.className = "dropdown-item";
+  
+      let name = placesDB[key].indoorName;
+  
+      // highlight match 
+      let safeInput = this.value.trim();     // original input for highlight
+      let regex = new RegExp(safeInput, "gi");
+  
+      item.innerHTML = name.replace(regex, match => `<b>${match}</b>`);
+  
+      item.addEventListener("click", () => {
+        searchBox.value = name;
+        dropdown.innerHTML = "";
+        console.log(name);
+      });
+  
+      dropdown.appendChild(item);
+  
+    });
+  });
+
+// CLOSE DROPDOWN WHEN CLICK OUTSIDE
+document.addEventListener("click", (e) => {
+    if (!searchBox.contains(e.target) && !dropdown.contains(e.target)) {
+    dropdown.innerHTML = "";
+  }
+});
+
+
+
+function findPlace(q){
+    q = q.toLowerCase().trim();
+  
+    let bestMatch = null;
+    let bestScore = -1;
+  
+    for(let key in placesDB){
+  
+        let indoor = placesDB[key].indoorName.toLowerCase();
+        let score = 0;
+  
+        // Exact match (highest priority)
+        if(indoor === q || key === q) score += 1000;
+  
+        // Starts with (very strong)
+        if(indoor.startsWith(q) || key.startsWith(q)) score += 500;
+  
+        //  Word match (important fix)
+        let words = indoor.split(" ");
+        if(words.includes(q)) score += 300;
+  
+        // Substring match
+        if(indoor.includes(q)) score += 100;
+        if(key.includes(q)) score += 100;
+  
+        // Length penalty 
+        score -= Math.abs(indoor.length - q.length);
+  
+        if(score > bestScore){
+            bestScore = score;
+            bestMatch = placesDB[key];
+        }
+    }
+  
+    console.log("Best match:", bestMatch, "Score:", bestScore);
+    return bestMatch;
+  }
+
+// MAP
+var map = L.map('map', {zoomControl: false}).setView([30.7649, 76.7868], 18);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+
+let currentLocation = null;
+let userMarker = null;
+let accuracyCircle = null;
+let watchId = null;
+let routeControl = null;
+let selectedPlace = null;
+let lastUpdate = 0;
+
+// CHECK SUPPORT
+if (!navigator.geolocation) {
+    alert("Geolocation not supported by your browser");
+} else {
+
+    watchId = navigator.geolocation.watchPosition(
+        success,
+        error,
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+}
+
+function success(pos) {
+
+  let now = Date.now();
+
+  // limit updates (every 3 seconds)
+  if (now - lastUpdate < 2000) return;
+  lastUpdate = now;
+
+  let lat = pos.coords.latitude;
+  let lng = pos.coords.longitude;
+  let accuracy = pos.coords.accuracy;
+
+  console.log("Live Location:", lat, lng);
+
+  currentLocation = L.latLng(lat, lng);
+
+  // Save for other pages
+  localStorage.setItem("currentLat", lat);
+  localStorage.setItem("currentLng", lng);
+
+  // Remove old marker
+  if (userMarker) map.removeLayer(userMarker);
+  if (accuracyCircle) map.removeLayer(accuracyCircle);
+
+  // Add new marker
+  userMarker = L.marker(currentLocation).addTo(map);
+  accuracyCircle = L.circle(currentLocation, {
+      radius: accuracy
+  }).addTo(map);
+
+  // Follow user
+  map.setView(currentLocation, 18);
+
+  // AUTO UPDATE ROUTE
+  if (routeControl && selectedPlace) {
+
+      let dest = L.latLng(
+          selectedPlace.entrance[0],
+          selectedPlace.entrance[1]
+      );
+
+      routeControl.setWaypoints([
+          currentLocation,
+          dest
+      ]);
+  }
+}
+
+function error(err) {
+    console.error("Location error:", err);
+
+    alert("Location access denied or unavailable");
+
+    // fallback location
+    currentLocation = L.latLng(30.7649, 76.7868);
+
+    userMarker = L.marker(currentLocation).addTo(map);
+    map.setView(currentLocation, 18);
+}
+
+
+document.getElementById("searchBox").addEventListener("change", function(){
+
+  if(!currentLocation){
+      alert("Waiting for GPS... Try again in 2 seconds");
+      return;
+  }
+
+  console.log("Routing from:", currentLocation);
+  navSound.volume = 0.9;
+  navSound.play().catch(() => {});       // prevent autoplay error
+
+  let place = findPlace(this.value);
+
+  if(!place){
+      alert("Not found");
+      return;
+  }
+
+  selectedPlace = place;
+
+  let dest = L.latLng(place.entrance[0], place.entrance[1]);
+
+  console.log("Destination:", dest);
+  console.log("selected place:", selectedPlace);
+
+  if(routeControl) map.removeControl(routeControl);
+
+  routeControl = L.Routing.control({
+      waypoints: [currentLocation, dest],
+
+      router: L.Routing.osrmv1({
+          serviceUrl: 'https://router.project-osrm.org/route/v1'
+      }),
+
+      routeWhileDragging: false,
+      draggableWaypoints: false,
+      addWaypoints: false,
+
+      show: false, // cleaner UI
+
+      createMarker: function () {
+          return null;
+      }
+
+  }).addTo(map);
+
+  // remove old markers
+  if (window.startMarker) map.removeLayer(startMarker);
+  if (window.endMarker) map.removeLayer(endMarker);
+
+
+  // add destination marker
+  endMarker = L.marker(dest).addTo(map)
+      .bindPopup("Destination")
+      .openPopup();
+
+      document.getElementById("enterBtn").style.display = "block";
+
+});
+
+
+document.getElementById("enterBtn").onclick = function(){
+
+  if(!selectedPlace){
+      alert("Search first");
+      return;
+  }
+
+  let room = selectedPlace.indoorName;
+  
+  // Save (backup method)
+  localStorage.setItem("selectedRoom", room);
+  
+  // Pass via URL
+  let encodedRoom = encodeURIComponent(room);
+
+  window.location.href = `in3.html?room=${encodedRoom}`;
+};
+
+</script>
+
+</body>
+</html> 
