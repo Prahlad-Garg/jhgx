@@ -70,13 +70,20 @@ body {
     box-shadow: 0 12px 40px rgba(0,0,0,0.7);
 }
 
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom {
+    z-index: 400;
+}
+
+
 #enterBtn {
     position: fixed;
-    bottom: 30px;
+    bottom: calc(20px + env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%);
     
-    z-index: 10000;   
+    z-index: 99999;   
 
     padding: 14px 24px;
     font-size: 16px;
