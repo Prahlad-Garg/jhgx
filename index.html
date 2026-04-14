@@ -230,10 +230,10 @@ if (!navigator.geolocation) {
     );
 }
 
+let followUser = true;
 function success(pos) {
 
   let now = Date.now();
-let followUser = true;
   // limit updates (every 3 seconds)
   if (now - lastUpdate < 2000) return;
   lastUpdate = now;
@@ -264,10 +264,6 @@ let followUser = true;
   if (followUser) {
     map.setView(currentLocation, 18);
 }
-
-    map.on('dragstart zoomstart', () => {
-    followUser = false;
-});
     
   // AUTO UPDATE ROUTE
   if (routeControl && selectedPlace) {
@@ -284,6 +280,10 @@ let followUser = true;
   }
 }
 
+map.on('dragstart zoomstart', () => {
+    followUser = false;
+});
+    
 function error(err) {
     console.error("Location error:", err);
 
