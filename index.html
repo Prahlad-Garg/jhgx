@@ -118,6 +118,31 @@ function normalize(text) {
       .replace(/\s+/g, " ")       // remove extra spaces
       .trim();
   }
+
+    function handleSearch(val) {
+    let place = findPlace(val);
+    if (!place) return;
+
+    selectedPlace = place;
+    let dest = L.latLng(place.entrance[0], place.entrance[1]);
+
+    if (routeControl) map.removeControl(routeControl);
+
+    routeControl = L.Routing.control({
+        waypoints: [currentLocation, dest],
+        show: false,
+        createMarker: () => null
+    }).addTo(map);
+
+    if (window.endMarker) map.removeLayer(endMarker);
+    endMarker = L.marker(dest).addTo(map).bindPopup("Destination").openPopup();
+
+    // SHOW THE BUTTON
+    let btn = document.getElementById("enterBtn");
+    btn.style.display = "block";
+    btn.style.visibility = "visible";
+    btn.style.opacity = "1";
+}
   
   searchBox.addEventListener("input", function () {
     let input = normalize(this.value);
@@ -148,6 +173,7 @@ function normalize(text) {
         searchBox.value = name;
         dropdown.innerHTML = "";
         console.log(name);
+        handleSearch(name);
       });
   
       dropdown.appendChild(item);
