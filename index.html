@@ -230,7 +230,7 @@ if (!navigator.geolocation) {
     );
 }
 
-let followUser = true;
+let isFirstFix = true;
 function success(pos) {
 
   let now = Date.now();
@@ -261,10 +261,11 @@ function success(pos) {
   }).addTo(map);
 
   // Follow user
-  if (followUser) {
-    map.setView(currentLocation, 18);
-}
-    
+  if (isFirstFix) {
+      map.setView(currentLocation, 18);
+      isFirstFix = false;
+  }
+
   // AUTO UPDATE ROUTE
   if (routeControl && selectedPlace) {
 
@@ -327,6 +328,7 @@ document.getElementById("searchBox").addEventListener("change", function(){
   routeControl = L.Routing.control({
       waypoints: [currentLocation, dest],
 
+      fitSelectedRoutes: false,
       router: L.Routing.osrmv1({
           serviceUrl: 'https://router.project-osrm.org/route/v1'
       }),
