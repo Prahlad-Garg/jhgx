@@ -2,6 +2,7 @@ body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
     background: #0f172a;
+    padding-bottom: 80px; 
 }
 
 .header {
@@ -19,7 +20,7 @@ body {
 }
 
 #map {
-    height: 100vh;
+    height: 100dvh; 
     width: 100%;
 }
 
@@ -71,21 +72,25 @@ body {
 
 #enterBtn {
     position: fixed;
-    bottom: 70px; 
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 10000;
+    
+    z-index: 10000;   
 
-    padding: 14px 22px;
+    padding: 14px 24px;
     font-size: 16px;
 
-    background: #22c55e;
+    background: #007bff;
     color: white;
     border: none;
     border-radius: 12px;
 
-    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+
+    display: none; 
 }
+
 .search-container {
     position: absolute;
     top: 20px;
