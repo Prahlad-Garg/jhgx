@@ -71,22 +71,21 @@ body {
 
 #enterBtn {
     position: fixed;
-    bottom: 20px;
+    bottom: 70px; 
     left: 50%;
     transform: translateX(-50%);
-    z-index: 9999;
+    z-index: 10000;
 
-    padding: 12px 20px;
+    padding: 14px 22px;
     font-size: 16px;
 
-    background: #007bff;
+    background: #22c55e;
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
 }
-
 .search-container {
     position: absolute;
     top: 20px;
