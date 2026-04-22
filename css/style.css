@@ -20,10 +20,12 @@ body {
 }
 
 #map {
-    height: calc(100dvh - 0px); 
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    position: relative;
-    z-index: 1; 
+    height: 100%;
+    z-index: 1;
 }
 
 .map-wrapper {
@@ -81,11 +83,10 @@ body {
 
 #enterBtn {
     position: fixed;
-    bottom: 50px;
+    bottom: 40px;
     left: 50%;
     transform: translateX(-50%);
-    -webkit-transform: translateX(-50%);
-    z-index: 9999 !important;
+    z-index: 99999;
     
     padding: 16px 32px;
     font-size: 18px;
@@ -96,14 +97,7 @@ body {
     border-radius: 50px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     cursor: pointer;
-    
     display: none;
-    visibility: hidden;
-    opacity: 0;
-    
-    transition: opacity 0.3s ease;
-    pointer-events: auto !important;
-    -webkit-appearance: none;
 }
 
 #enterBtn.visible {
