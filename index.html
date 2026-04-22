@@ -18,9 +18,6 @@
 </div>
 
 <div id="map"></div>
- <button id="enterBtn" style="display:none; position:fixed; bottom:40px; left:50%; transform:translateX(-50%); z-index:99999; padding:16px 32px; font-size:18px; font-weight:bold; background:#007bff; color:white; border:none; border-radius:50px; cursor:pointer;">
-        Enter Building
-    </button>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
@@ -108,8 +105,39 @@ const placesDB = {
 
 
 function showEnterBtn() {
-    let btn = document.getElementById("enterBtn");
-    btn.style.cssText = "display:block !important; position:fixed !important; bottom:40px !important; left:50% !important; transform:translateX(-50%) !important; z-index:99999 !important; padding:16px 32px; font-size:18px; font-weight:bold; background:#007bff; color:white; border:none; border-radius:50px; cursor:pointer;";
+    // Remove existing button if any
+    let old = document.getElementById("enterBtn");
+    if (old) old.remove();
+
+    let btn = document.createElement("button");
+    btn.id = "enterBtn";
+    btn.innerText = "Enter Building";
+    btn.style.cssText = `
+        position: fixed;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 999999;
+        padding: 16px 32px;
+        font-size: 18px;
+        font-weight: bold;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        cursor: pointer;
+    `;
+
+    btn.onclick = function() {
+        if (!selectedPlace) { alert("Search first"); return; }
+        let room = selectedPlace.indoorName;
+        localStorage.setItem("selectedRoom", room);
+        let encodedRoom = encodeURIComponent(room);
+        window.location.href = `in3.html?room=${encodedRoom}`;
+    };
+
+    document.body.appendChild(btn);
 }
     
 let navSound = new Audio("sounds/navigate2.mp3");
