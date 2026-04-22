@@ -24,6 +24,14 @@
 
 <script>
 
+
+    setTimeout(() => {
+    let btn = document.createElement("button");
+    btn.innerText = "TEST BUTTON";
+    btn.style.cssText = "position:fixed; bottom:40px; left:50%; transform:translateX(-50%); z-index:999999; padding:20px 40px; font-size:20px; background:red; color:white; border:none; border-radius:50px;";
+    document.body.appendChild(btn);
+}, 3000);
+    
 // DATABASE
 const placesDB = {
   "alka": {
