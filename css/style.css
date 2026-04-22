@@ -81,11 +81,11 @@ body {
 
 #enterBtn {
     position: fixed;
-    bottom: env(safe-area-inset-bottom, 30px);
-    margin-bottom: 20px;
+    bottom: 50px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 9999; 
+    -webkit-transform: translateX(-50%);
+    z-index: 9999 !important;
     
     padding: 16px 32px;
     font-size: 18px;
@@ -98,9 +98,18 @@ body {
     cursor: pointer;
     
     display: none;
+    visibility: hidden;
+    opacity: 0;
     
-    -webkit-transform: translateX(-50%);
-    will-change: transform;
+    transition: opacity 0.3s ease;
+    pointer-events: auto !important;
+    -webkit-appearance: none;
+}
+
+#enterBtn.visible {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .search-container {
