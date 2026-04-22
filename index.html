@@ -18,21 +18,13 @@
 </div>
 
 <div id="map"></div>
-    <button id="enterBtn">Enter Building</button>
+<button id="enterBtn">Enter Building</button>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
 <script>
 
-
-    setTimeout(() => {
-    let btn = document.createElement("button");
-    btn.innerText = "TEST BUTTON";
-    btn.style.cssText = "position:fixed; bottom:40px; left:50%; transform:translateX(-50%); z-index:999999; padding:20px 40px; font-size:20px; background:red; color:white; border:none; border-radius:50px;";
-    document.body.appendChild(btn);
-}, 3000);
-    
 // DATABASE
 const placesDB = {
   "alka": {
@@ -113,18 +105,6 @@ const placesDB = {
 };
 
 
-function showEnterBtn() {
-    let btn = document.getElementById("enterBtn");
-    btn.style.cssText = "display:block; position:fixed; bottom:40px; left:50%; transform:translateX(-50%); z-index:999999; padding:16px 32px; font-size:18px; font-weight:bold; background:#007bff; color:white; border:none; border-radius:50px; cursor:pointer;";
-    
-    btn.onclick = function() {
-        if (!selectedPlace) { alert("Search first"); return; }
-        let room = selectedPlace.indoorName;
-        localStorage.setItem("selectedRoom", room);
-        window.location.href = `in3.html?room=${encodeURIComponent(room)}`;
-    };
-}
-    
 let navSound = new Audio("sounds/navigate2.mp3");
 
 // FOR COMPLETE NAME SUGGESION
@@ -157,7 +137,10 @@ function normalize(text) {
     if (window.endMarker) map.removeLayer(endMarker);
     endMarker = L.marker(dest).addTo(map).bindPopup("Destination").openPopup();
 
-  showEnterBtn();
+    // SHOW THE BUTTON
+    let btn = document.getElementById("enterBtn");
+    btn.style.display = "block";
+    btn.style.opacity = "1";
 }
   
   searchBox.addEventListener("input", function () {
@@ -398,11 +381,30 @@ document.getElementById("searchBox").addEventListener("change", function(){
       .bindPopup("Destination")
       .openPopup();
 
- showEnterBtn();
+   let btn = document.getElementById("enterBtn");
+    btn.style.display = "block";
+    btn.style.visibility = "visible";
+    btn.style.opacity = "1";
 });
 
 
+document.getElementById("enterBtn").onclick = function(){
 
+  if(!selectedPlace){
+      alert("Search first");
+      return;
+  }
+
+  let room = selectedPlace.indoorName;
+  
+  // Save (backup method)
+  localStorage.setItem("selectedRoom", room);
+  
+  // Pass via URL
+  let encodedRoom = encodeURIComponent(room);
+
+  window.location.href = `in3.html?room=${encodedRoom}`;
+};
 
 </script>
 
