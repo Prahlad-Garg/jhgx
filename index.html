@@ -137,10 +137,7 @@ function normalize(text) {
     if (window.endMarker) map.removeLayer(endMarker);
     endMarker = L.marker(dest).addTo(map).bindPopup("Destination").openPopup();
 
-    // SHOW THE BUTTON
-    let btn = document.getElementById("enterBtn");
-    btn.style.display = "block";
-    btn.style.opacity = "1";
+   document.getElementById("enterBtn").classList.add("visible");
 }
   
   searchBox.addEventListener("input", function () {
@@ -381,10 +378,7 @@ document.getElementById("searchBox").addEventListener("change", function(){
       .bindPopup("Destination")
       .openPopup();
 
-   let btn = document.getElementById("enterBtn");
-    btn.style.display = "block";
-    btn.style.visibility = "visible";
-    btn.style.opacity = "1";
+   document.getElementById("enterBtn").classList.add("visible");
 });
 
 
