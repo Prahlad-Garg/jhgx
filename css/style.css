@@ -20,8 +20,10 @@ body {
 }
 
 #map {
-    height: 100dvh; 
+    height: calc(100dvh - 0px); 
     width: 100%;
+    position: relative;
+    z-index: 1; 
 }
 
 .map-wrapper {
@@ -79,23 +81,26 @@ body {
 
 #enterBtn {
     position: fixed;
-    bottom: 30px;
+    bottom: env(safe-area-inset-bottom, 30px);
+    margin-bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 2000;
+    z-index: 9999; 
     
-    padding: 16px 32px; 
+    padding: 16px 32px;
     font-size: 18px;
     font-weight: bold;
-
     background: #007bff;
     color: white;
     border: none;
-    border-radius: 50px; 
-
+    border-radius: 50px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    cursor: pointer;
     
-    display: none; 
+    display: none;
+    
+    -webkit-transform: translateX(-50%);
+    will-change: transform;
 }
 
 .search-container {
